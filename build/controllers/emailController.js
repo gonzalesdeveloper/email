@@ -37,9 +37,10 @@ class EmailController {
                 //});
                 // Enviar correo
                 const data = yield resend.emails.send({
-                    from: `"${nombre}" <${email}>`,
+                    from: "Formulario HLPeru <noreply@hlperu.com>",
                     to: "info@hlperu.com", // a quién se envía (tu correo de recepción)
                     subject: "Nuevo mensaje desde la página web",
+                    replyTo: email,
                     html: `
                 <h3>Nuevo mensaje desde el formulario</h3> <br>
                 <p><b>Nombre:</b> ${nombre}</p> <br><br>
