@@ -13,33 +13,39 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.emailController = void 0;
-const nodemailer_1 = __importDefault(require("nodemailer"));
+const resend_1 = require("resend");
+const dotenv_1 = __importDefault(require("dotenv"));
+dotenv_1.default.config();
+const resend = new resend_1.Resend(process.env.RESEND_API_KEY);
 class EmailController {
     SendEmailWeb(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             const { nombre, email, mensaje } = req.body;
+            if (!nombre || !email || !mensaje) {
+                return res.status(400).json({ success: false, message: "Faltan datos en el formulario" });
+            }
             try {
                 // Configuración del transporte
-                const transporter = nodemailer_1.default.createTransport({
-                    host: process.env.SMTP_HOST, // Ej: smtp.gmail.com o mail.tudominio.com
-                    port: Number(process.env.SMTP_PORT) || 465,
-                    secure: true, // true para 465, false para otros puertos
-                    auth: {
-                        user: process.env.SMTP_USER, // tu correo
-                        pass: process.env.SMTP_PASS // contraseña de aplicación o SMTP
-                    }
-                });
+                //const transporter = nodemailer.createTransport({
+                //host: process.env.SMTP_HOST,       // Ej: smtp.gmail.com o mail.tudominio.com
+                //port: Number(process.env.SMTP_PORT) || 465,
+                //secure: true, // true para 465, false para otros puertos
+                //auth: {
+                //user: process.env.SMTP_USER,     // tu correo
+                //pass: process.env.SMTP_PASS      // contraseña de aplicación o SMTP
+                //}
+                //});
                 // Enviar correo
-                yield transporter.sendMail({
+                const data = yield resend.emails.send({
                     from: `"${nombre}" <${email}>`,
-                    to: process.env.SMTP_USER, // a quién se envía (tu correo de recepción)
+                    to: "info@hlperu.com", // a quién se envía (tu correo de recepción)
                     subject: "Nuevo mensaje desde la página web",
                     html: `
-            <h3>Nuevo mensaje desde el formulario</h3>
-            <p><b>Nombre:</b> ${nombre}</p>
-            <p><b>Email:</b> ${email}</p>
-            <p><b>Mensaje:</b> ${mensaje}</p>
-        `
+                <h3>Nuevo mensaje desde el formulario</h3> <br>
+                <p><b>Nombre:</b> ${nombre}</p> <br><br>
+                <p><b>Email:</b> ${email}</p> <br> <br>
+                <p><b>Mensaje:</b> ${mensaje}</p>
+            `
                 });
                 return res.json({ success: true, message: "Correo enviado con éxito ✅" });
             }
