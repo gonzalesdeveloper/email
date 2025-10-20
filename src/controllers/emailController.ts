@@ -1,30 +1,35 @@
 import { Request, Response } from "express";
-import nodemailer from "nodemailer";
+import { Resend } from "resend";
+import dotenv from "dotenv";
+
+dotenv.config();
+
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 class EmailController{
     public async SendEmailWeb(req: Request, res: Response){
         const { nombre, email, mensaje } = req.body;
 
         if (!nombre || !email || !mensaje) {
-        return res.status(400).json({ success: false, message: "Faltan datos en el formulario" });
+            return res.status(400).json({ success: false, message: "Faltan datos en el formulario" });
         }
 
         try {
             // Configuración del transporte
-            const transporter = nodemailer.createTransport({
-            host: process.env.SMTP_HOST,       // Ej: smtp.gmail.com o mail.tudominio.com
-            port: Number(process.env.SMTP_PORT) || 465,
-            secure: true, // true para 465, false para otros puertos
-            auth: {
-                user: process.env.SMTP_USER,     // tu correo
-                pass: process.env.SMTP_PASS      // contraseña de aplicación o SMTP
-            }
-            });
+            //const transporter = nodemailer.createTransport({
+            //host: process.env.SMTP_HOST,       // Ej: smtp.gmail.com o mail.tudominio.com
+            //port: Number(process.env.SMTP_PORT) || 465,
+            //secure: true, // true para 465, false para otros puertos
+            //auth: {
+                //user: process.env.SMTP_USER,     // tu correo
+                //pass: process.env.SMTP_PASS      // contraseña de aplicación o SMTP
+            //}
+            //});
 
             // Enviar correo
-            await transporter.sendMail({
+            const data = await resend.emails.send({
             from: `"${nombre}" <${email}>`,
-            to: process.env.SMTP_USER, // a quién se envía (tu correo de recepción)
+            to: "info@hlperu.com", // a quién se envía (tu correo de recepción)
             subject: "Nuevo mensaje desde la página web",
             html: `
                 <h3>Nuevo mensaje desde el formulario</h3> <br>
