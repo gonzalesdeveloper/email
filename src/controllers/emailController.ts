@@ -28,7 +28,7 @@ class EmailController{
 
             // Enviar correo
             const data = await resend.emails.send({
-            from: "Formulario HLPeru <noreply@resend.dev>",
+            from: "Formulario HLPeru <noreply@hliquitos.com>",
             to: "info@iquitos.com", // a quién se envía (tu correo de recepción)
             subject: "Nuevo mensaje desde la página web",
             replyTo: email,
